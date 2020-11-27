@@ -1,15 +1,11 @@
 package it.unimore.dipi.iot.digitaltwin.dummy;
 
-import it.unimore.dipi.iot.wldt.cache.WldtCache;
 import it.unimore.dipi.iot.wldt.engine.WldtConfiguration;
 import it.unimore.dipi.iot.wldt.engine.WldtEngine;
 import it.unimore.dipi.iot.wldt.exception.WldtConfigurationException;
-import it.unimore.dipi.iot.wldt.processing.ProcessingPipeline;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import java.util.Collections;
-import java.util.concurrent.TimeUnit;
 
 /**
  * Author: Marco Picone, Ph.D. (marco.picone@unimore.it)
@@ -44,20 +40,24 @@ public class WldtDummyProcess {
             //Init the Engine
             WldtEngine wldtEngine = new WldtEngine(wldtConfiguration);
 
+            //Init Dummy Worker without Cache
+            WldtDummyWorker wldtDummyCachedWorker = new WldtDummyWorker(
+                    wldtEngine.getWldtId(),
+                    new DummyWorkerConfiguration());
+
             //Init Dummy Worker with Cache
-            WldtDummyWorker wldtDummyWorker = new WldtDummyWorker(
+            /*
+            WldtDummyCachedWorker wldtDummyCachedWorker = new WldtDummyCachedWorker(
                     wldtEngine.getWldtId(),
                     new DummyWorkerConfiguration(),
                     new WldtCache<>(5, TimeUnit.SECONDS));
-
-            //Init without caching
-            //WldtDummyWorker wldtDummyWorker = new WldtDummyWorker(wldtEngine.getWldtId(), new DummyWorkerConfiguration());
+            */
 
             //Set a Processing Pipeline
             //wldtDummyWorker.addProcessingPipeline(WldtDummyWorker.DEFAULT_PROCESSING_PIPELINE, new ProcessingPipeline(new DummyProcessingStep()));
 
-            //Init with Worker Cache
-            wldtEngine.addNewWorker(wldtDummyWorker);
+            //Init WLDT Engine with Worker Cache
+            wldtEngine.addNewWorker(wldtDummyCachedWorker);
 
             wldtEngine.startWorkers();
 

@@ -1,13 +1,13 @@
-package it.unimore.dipi.iot.device;
+package it.unimore.dipi.iot.smartobject.device;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import it.unimore.dipi.iot.message.TelemetryMessage;
-import it.unimore.dipi.iot.model.GpsLocationDescriptor;
-import it.unimore.dipi.iot.resource.BatterySensorResource;
-import it.unimore.dipi.iot.resource.GpsGpxSensorResource;
-import it.unimore.dipi.iot.resource.ResourceDataListener;
-import it.unimore.dipi.iot.resource.SmartObjectResource;
+import it.unimore.dipi.iot.smartobject.message.TelemetryMessage;
+import it.unimore.dipi.iot.smartobject.model.GpsLocationDescriptor;
+import it.unimore.dipi.iot.smartobject.resource.BatterySensorResource;
+import it.unimore.dipi.iot.smartobject.resource.GpsGpxSensorResource;
+import it.unimore.dipi.iot.smartobject.resource.ResourceDataListener;
+import it.unimore.dipi.iot.smartobject.resource.SmartObjectResource;
 import org.eclipse.paho.client.mqttv3.IMqttClient;
 import org.eclipse.paho.client.mqttv3.IMqttMessageListener;
 import org.eclipse.paho.client.mqttv3.MqttException;

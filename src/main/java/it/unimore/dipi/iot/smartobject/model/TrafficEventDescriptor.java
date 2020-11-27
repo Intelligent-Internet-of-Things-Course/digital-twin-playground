@@ -1,4 +1,4 @@
-package it.unimore.dipi.iot.model;
+package it.unimore.dipi.iot.smartobject.model;
 
 /**
  * @author Marco Picone, Ph.D. - picone.m@gmail.com

@@ -1,12 +1,16 @@
 package it.unimore.dipi.iot.digitaltwin.dummy;
 
+import com.codahale.metrics.Timer;
+import it.unimore.dipi.iot.wldt.cache.IWldtCache;
 import it.unimore.dipi.iot.wldt.exception.WldtConfigurationException;
 import it.unimore.dipi.iot.wldt.exception.WldtRuntimeException;
+import it.unimore.dipi.iot.wldt.metrics.WldtMetricsManager;
 import it.unimore.dipi.iot.wldt.processing.PipelineData;
 import it.unimore.dipi.iot.wldt.processing.ProcessingPipelineListener;
 import it.unimore.dipi.iot.wldt.worker.WldtWorker;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 import java.util.Optional;
 import java.util.Random;
 
@@ -15,9 +19,17 @@ import java.util.Random;
  * Date: 30/07/2020
  * Project: Dummy Example - White Label Digital Twin - Java Framework
  */
-public class WldtDummyWorker extends WldtWorker<DummyWorkerConfiguration, String, Integer> {
+public class WldtDummyCachedWorker extends WldtWorker<DummyWorkerConfiguration, String, Integer> {
 
-    private static final Logger logger = LoggerFactory.getLogger(WldtDummyWorker.class);
+    private static final Logger logger = LoggerFactory.getLogger(WldtDummyCachedWorker.class);
+
+    private static final String METRIC_BASE_IDENTIFIER = "dummy_worker";
+
+    private static final String WORKER_EXECUTION_TIME_METRICS_FIELD = "execution_time";
+
+    private static final String WORKER_VALUE_METRICS_FIELD = "execution_value";
+
+    private static final String CACHE_VALUE_KEY = "physical_obj_value";
 
     public static final String DEFAULT_PROCESSING_PIPELINE = "default_processing_pipeline";
 
@@ -27,8 +39,14 @@ public class WldtDummyWorker extends WldtWorker<DummyWorkerConfiguration, String
 
     private int RUN_COUNT_LIMIT = 10000;
 
-    public WldtDummyWorker(String wldtId, DummyWorkerConfiguration dummyWorkerConfiguration) {
+    public WldtDummyCachedWorker(String wldtId, DummyWorkerConfiguration dummyWorkerConfiguration) {
         super(dummyWorkerConfiguration);
+        this.random = new Random();
+        this.wldtId = wldtId;
+    }
+
+    public WldtDummyCachedWorker(String wldtId, DummyWorkerConfiguration dummyWorkerConfiguration, IWldtCache<String, Integer> wldtCache) {
+        super(dummyWorkerConfiguration, wldtCache);
         this.random = new Random();
         this.wldtId = wldtId;
     }
@@ -46,17 +64,28 @@ public class WldtDummyWorker extends WldtWorker<DummyWorkerConfiguration, String
 
     private void emulateExternalGetRequest(int roundIndex) {
 
+        Timer.Context metricsContext = WldtMetricsManager.getInstance().getTimer(String.format("%s.%s", METRIC_BASE_IDENTIFIER, this.wldtId), WORKER_EXECUTION_TIME_METRICS_FIELD);
+
         try{
 
-            logger.info("WLDT: {} Round [{}]: Dummy Worker Incoming Get Request .... ", this.wldtId, roundIndex);
+            logger.info("Round [{}]: Dummy Worker Incoming Get Request .... ", roundIndex);
 
             int physicalObjectValue = 0;
 
-            physicalObjectValue = retrieveValueFromPhysicalObject();
-            logger.info("Round [{}]: Physical Object Value: {} ", roundIndex, physicalObjectValue);
+            //Handle Cache
+            if(this.workerCache != null && this.workerCache.getData(CACHE_VALUE_KEY).isPresent()) {
+                physicalObjectValue = this.workerCache.getData(CACHE_VALUE_KEY).get();
+                logger.info("Round [{}]: Cached Physical Object Value: {} ", roundIndex, physicalObjectValue);
+            }
+            else{
+                physicalObjectValue = retrieveValueFromPhysicalObject();
+                logger.info("Round [{}]: Physical Object Value: {} ", roundIndex, physicalObjectValue);
+                if(this.workerCache != null)
+                    this.workerCache.putData(CACHE_VALUE_KEY, physicalObjectValue);
+            }
 
             //Check Processing Pipeline
-            if(this.hasProcessingPipeline(WldtDummyWorker.DEFAULT_PROCESSING_PIPELINE)) {
+            if(this.hasProcessingPipeline(WldtDummyCachedWorker.DEFAULT_PROCESSING_PIPELINE)) {
                 this.executeProcessingPipeline(DEFAULT_PROCESSING_PIPELINE, new DummyPipelineData(physicalObjectValue), new ProcessingPipelineListener() {
                    @Override
                    public void onPipelineDone(Optional<PipelineData> result) {
@@ -73,10 +102,16 @@ public class WldtDummyWorker extends WldtWorker<DummyWorkerConfiguration, String
                });
             }
 
+            WldtMetricsManager.getInstance().measureValue(String.format("%s.%s", METRIC_BASE_IDENTIFIER, this.wldtId), WORKER_VALUE_METRICS_FIELD, roundIndex);
+
             Thread.sleep(random.nextInt(3000) + 1000);
 
         }catch (Exception e){
             e.printStackTrace();
+        }
+        finally {
+            if(metricsContext != null)
+                metricsContext.stop();
         }
     }
 

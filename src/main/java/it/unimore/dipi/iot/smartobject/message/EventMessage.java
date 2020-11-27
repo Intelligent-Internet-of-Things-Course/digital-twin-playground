@@ -1,4 +1,4 @@
-package it.unimore.dipi.iot.message;
+package it.unimore.dipi.iot.smartobject.message;
 
 import java.util.Map;
 

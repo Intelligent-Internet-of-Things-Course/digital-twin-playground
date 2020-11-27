@@ -1,8 +1,8 @@
-package it.unimore.dipi.iot.process;
+package it.unimore.dipi.iot.smartobject.process;
 
-import it.unimore.dipi.iot.device.VehicleMqttSmartObject;
-import it.unimore.dipi.iot.resource.BatterySensorResource;
-import it.unimore.dipi.iot.resource.GpsGpxSensorResource;
+import it.unimore.dipi.iot.smartobject.device.VehicleMqttSmartObject;
+import it.unimore.dipi.iot.smartobject.resource.BatterySensorResource;
+import it.unimore.dipi.iot.smartobject.resource.GpsGpxSensorResource;
 import org.eclipse.paho.client.mqttv3.IMqttClient;
 import org.eclipse.paho.client.mqttv3.MqttClient;
 import org.eclipse.paho.client.mqttv3.MqttClientPersistence;
@@ -12,7 +12,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.HashMap;
-import java.util.UUID;
 
 /**
  * @author Marco Picone, Ph.D. - picone.m@gmail.com
@@ -27,12 +26,16 @@ public class VehicleSmartObjectProcess {
 
     private static int MQTT_BROKER_PORT = 1883;
 
+    private static String DEFAULT_VEHICLE_ID = "vehicle001";
+
     public static void main(String[] args) {
 
         try{
 
             //Generate Random Vehicle UUID
-            String vehicleId = UUID.randomUUID().toString();
+            //String vehicleId = UUID.randomUUID().toString();
+
+            String vehicleId = DEFAULT_VEHICLE_ID;
 
             //Create MQTT Client
             MqttClientPersistence persistence = new MemoryPersistence();

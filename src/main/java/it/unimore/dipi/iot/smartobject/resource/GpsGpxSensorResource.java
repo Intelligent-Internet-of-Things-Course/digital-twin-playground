@@ -1,10 +1,10 @@
-package it.unimore.dipi.iot.resource;
+package it.unimore.dipi.iot.smartobject.resource;
 
 import io.jenetics.jpx.GPX;
 import io.jenetics.jpx.Track;
 import io.jenetics.jpx.TrackSegment;
 import io.jenetics.jpx.WayPoint;
-import it.unimore.dipi.iot.model.GpsLocationDescriptor;
+import it.unimore.dipi.iot.smartobject.model.GpsLocationDescriptor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

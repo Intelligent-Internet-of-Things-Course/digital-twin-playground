@@ -1,4 +1,4 @@
-package it.unimore.dipi.iot.resource;
+package it.unimore.dipi.iot.smartobject.resource;
 
 /**
  * @author Marco Picone, Ph.D. - picone.m@gmail.com
