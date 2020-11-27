@@ -1,4 +1,4 @@
-package it.unimore.dipi.iot.consumer;
+package it.unimore.dipi.iot.consumer.mqtt;
 
 import org.eclipse.paho.client.mqttv3.IMqttClient;
 import org.eclipse.paho.client.mqttv3.MqttClient;

@@ -54,8 +54,8 @@ public class MqttDigitalTwinProcess {
             Mqtt2MqttWorker mqtt2MqttWorker = new Mqtt2MqttWorker(wldtEngine.getWldtId(), getMqttExampleConfiguration());
 
             //Setup Processing Pipeline
-            mqtt2MqttWorker.addProcessingPipeline(Mqtt2MqttWorker.DEFAULT_RESOURCE_TELEMETRY_PROCESSING_PIPELINE,
-                    new ProcessingPipeline(new SenmlMqttProcessingStep(wldtEngine.getWldtId())));
+            //mqtt2MqttWorker.addProcessingPipeline(Mqtt2MqttWorker.DEFAULT_RESOURCE_TELEMETRY_PROCESSING_PIPELINE,
+                    //new ProcessingPipeline(new SenmlMqttProcessingStep(wldtEngine.getWldtId())));
 
             wldtEngine.addNewWorker(mqtt2MqttWorker);
             wldtEngine.startWorkers();

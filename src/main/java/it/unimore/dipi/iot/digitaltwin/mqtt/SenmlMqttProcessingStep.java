@@ -16,7 +16,6 @@ import it.unimore.dipi.iot.wldt.processing.cache.PipelineCache;
 import it.unimore.dipi.iot.wldt.worker.mqtt.MqttPipelineData;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import java.util.Optional;
 
 /**
