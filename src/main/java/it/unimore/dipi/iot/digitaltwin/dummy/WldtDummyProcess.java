@@ -1,11 +1,14 @@
 package it.unimore.dipi.iot.digitaltwin.dummy;
 
+import it.unimore.dipi.iot.wldt.cache.WldtCache;
 import it.unimore.dipi.iot.wldt.engine.WldtConfiguration;
 import it.unimore.dipi.iot.wldt.engine.WldtEngine;
 import it.unimore.dipi.iot.wldt.exception.WldtConfigurationException;
+import it.unimore.dipi.iot.wldt.processing.ProcessingPipeline;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import java.util.Collections;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Author: Marco Picone, Ph.D. (marco.picone@unimore.it)
@@ -33,7 +36,7 @@ public class WldtDummyProcess {
             wldtConfiguration.setDeviceNameSpace("it.unimore.dipi.things");
             wldtConfiguration.setWldtBaseIdentifier("it.unimore.dipi.iot.wldt.example.dummy");
             wldtConfiguration.setWldtStartupTimeSeconds(10);
-            wldtConfiguration.setApplicationMetricsEnabled(false);
+            wldtConfiguration.setApplicationMetricsEnabled(true);
             wldtConfiguration.setApplicationMetricsReportingPeriodSeconds(10);
             wldtConfiguration.setMetricsReporterList(Collections.singletonList("csv"));
 
@@ -41,23 +44,22 @@ public class WldtDummyProcess {
             WldtEngine wldtEngine = new WldtEngine(wldtConfiguration);
 
             //Init Dummy Worker without Cache
-            WldtDummyWorker wldtDummyCachedWorker = new WldtDummyWorker(
-                    wldtEngine.getWldtId(),
-                    new DummyWorkerConfiguration());
+            //WldtDummyWorker wldtDummyWorker = new WldtDummyWorker(
+            //        wldtEngine.getWldtId(),
+            //        new DummyWorkerConfiguration());
 
             //Init Dummy Worker with Cache
-            /*
-            WldtDummyCachedWorker wldtDummyCachedWorker = new WldtDummyCachedWorker(
+            WldtDummyCachedWorker wldtDummyWorker = new WldtDummyCachedWorker(
                     wldtEngine.getWldtId(),
                     new DummyWorkerConfiguration(),
                     new WldtCache<>(5, TimeUnit.SECONDS));
-            */
 
             //Set a Processing Pipeline
-            //wldtDummyWorker.addProcessingPipeline(WldtDummyWorker.DEFAULT_PROCESSING_PIPELINE, new ProcessingPipeline(new DummyProcessingStep()));
+            wldtDummyWorker.addProcessingPipeline(WldtDummyWorker.DEFAULT_PROCESSING_PIPELINE,
+                    new ProcessingPipeline(new DummyProcessingStep()));
 
             //Init WLDT Engine with Worker Cache
-            wldtEngine.addNewWorker(wldtDummyCachedWorker);
+            wldtEngine.addNewWorker(wldtDummyWorker);
 
             wldtEngine.startWorkers();
 
