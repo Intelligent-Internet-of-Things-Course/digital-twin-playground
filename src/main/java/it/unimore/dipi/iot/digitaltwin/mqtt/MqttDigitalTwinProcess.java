@@ -6,6 +6,7 @@ import it.unimore.dipi.iot.wldt.exception.WldtConfigurationException;
 import it.unimore.dipi.iot.wldt.processing.ProcessingPipeline;
 import it.unimore.dipi.iot.wldt.worker.mqtt.Mqtt2MqttConfiguration;
 import it.unimore.dipi.iot.wldt.worker.mqtt.Mqtt2MqttWorker;
+import it.unimore.dipi.iot.wldt.worker.mqtt.MqttTopicDescriptor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import java.util.Arrays;
@@ -25,14 +26,22 @@ public class MqttDigitalTwinProcess {
 
     private static final Logger logger = LoggerFactory.getLogger(MqttDigitalTwinProcess.class);
 
-    private static final String DT_DESTINATION_MQTT_ADDRESS = "127.0.0.1";
+    private static final String GPS_TOPIC_ID = "gps_topic";
+    private static final String GPS_RESOURCE_ID = "gps";
 
-    private static final int DT_DESTINATION_MQTT_PORT = 1884;
+    private static final String BATTERY_TOPIC_ID = "battery_topic";
+    private static final String BATTERY_RESOURCE_ID = "battery";
 
-    private static final String DT_SOURCE_MQTT_ADDRESS = "127.0.0.1";
+    private static final String COMMAND_TOPIC_ID = "command_topic";
+    private static final String COMMAND_RESOURCE_ID = "default_command_channel";
 
-    private static final int DT_SOURCE_MQTT_PORT = 1883;
+    private static final String SOURCE_BROKER_ADDRESS = "127.0.0.1";
+    private static final int SOURCE_BROKER_PORT = 1883;
 
+    private static final String DESTINATION_BROKER_ADDRESS = "127.0.0.1";
+    private static final int DESTINATION_BROKER_PORT = 1884;
+
+    private static final String DEVICE_ID = "vehicle001";
 
     public static void main(String[] args)  {
 
@@ -51,16 +60,22 @@ public class MqttDigitalTwinProcess {
 
             WldtEngine wldtEngine = new WldtEngine(wldtConfiguration);
 
-            Mqtt2MqttWorker mqtt2MqttWorker = new Mqtt2MqttWorker(wldtEngine.getWldtId(), getMqttExampleConfiguration());
+            Mqtt2MqttWorker mqtt2MqttWorker = new Mqtt2MqttWorker(wldtEngine.getWldtId(),
+                    getMqttProtocolConfiguration());
 
-            //Setup Processing Pipeline
-            mqtt2MqttWorker.addProcessingPipeline(Mqtt2MqttWorker.DEFAULT_RESOURCE_TELEMETRY_PROCESSING_PIPELINE,
-                    new ProcessingPipeline(new SenmlMqttProcessingStep(wldtEngine.getWldtId())));
+            //Add Processing Pipeline for target topics
+            mqtt2MqttWorker.addTopicProcessingPipeline(GPS_TOPIC_ID,
+                    new ProcessingPipeline(new SenmlMqttProcessingStep(wldtEngine.getWldtId()))
+            );
+
+            mqtt2MqttWorker.addTopicProcessingPipeline(BATTERY_TOPIC_ID,
+                    new ProcessingPipeline(new SenmlMqttProcessingStep(wldtEngine.getWldtId()))
+            );
 
             wldtEngine.addNewWorker(mqtt2MqttWorker);
             wldtEngine.startWorkers();
 
-        }catch (Exception | WldtConfigurationException e){
+        }catch (Exception e){
             e.printStackTrace();
         }
     }
@@ -69,21 +84,41 @@ public class MqttDigitalTwinProcess {
      * Example configuration for the MQTT-to-MQTT WLDT Worker
      * @return
      */
-    private static Mqtt2MqttConfiguration getMqttExampleConfiguration(){
+    private static Mqtt2MqttConfiguration getMqttProtocolConfiguration(){
+
+        //Configuration associated to the MQTT experimental use-case available in the dedicated project
+        //Demo Telemetry topic -> telemetry/com:iot:dummy:dummyMqttDevice001/resource/dummy_string_resource
 
         Mqtt2MqttConfiguration mqtt2MqttConfiguration = new Mqtt2MqttConfiguration();
 
-        mqtt2MqttConfiguration.setOutgoingClientQoS(0);
-        mqtt2MqttConfiguration.setDestinationBrokerAddress(DT_DESTINATION_MQTT_ADDRESS);
-        mqtt2MqttConfiguration.setDestinationBrokerPort(DT_DESTINATION_MQTT_PORT);
-        mqtt2MqttConfiguration.setDestinationBrokerBaseTopic("wldt");
-        mqtt2MqttConfiguration.setDeviceId("vehicle001");
-        mqtt2MqttConfiguration.setResourceIdList(Arrays.asList("gps", "battery"));
-        mqtt2MqttConfiguration.setDeviceTelemetryTopic("fleet/vehicle/{{device_id}}/telemetry");
-        mqtt2MqttConfiguration.setResourceTelemetryTopic("fleet/vehicle/{{device_id}}/telemetry/{{resource_id}}");
-        mqtt2MqttConfiguration.setEventTopic("fleet/vehicle/{{device_id}}/event");
-        mqtt2MqttConfiguration.setBrokerAddress(DT_SOURCE_MQTT_ADDRESS);
-        mqtt2MqttConfiguration.setBrokerPort(DT_SOURCE_MQTT_PORT);
+        mqtt2MqttConfiguration.setDtPublishingQoS(0);
+        mqtt2MqttConfiguration.setBrokerAddress(SOURCE_BROKER_ADDRESS);
+        mqtt2MqttConfiguration.setBrokerPort(SOURCE_BROKER_PORT);
+        mqtt2MqttConfiguration.setDestinationBrokerAddress(DESTINATION_BROKER_ADDRESS);
+        mqtt2MqttConfiguration.setDestinationBrokerPort(DESTINATION_BROKER_PORT);
+        mqtt2MqttConfiguration.setDeviceId(DEVICE_ID);
+
+        //If Required Specify the ClientId
+        mqtt2MqttConfiguration.setBrokerClientId("dt-physicalBrokerTestClientId");
+        mqtt2MqttConfiguration.setDestinationBrokerClientId("dt-digitalBrokerTestClientId");
+
+        //Specify Topic List Configuration
+        mqtt2MqttConfiguration.setTopicList(
+                Arrays.asList(
+                        new MqttTopicDescriptor(GPS_TOPIC_ID,
+                                GPS_RESOURCE_ID,
+                                "fleet/vehicle/{{device_id}}/telemetry/{{resource_id}}",
+                                MqttTopicDescriptor.MQTT_TOPIC_TYPE_DEVICE_OUTGOING),
+                        new MqttTopicDescriptor(BATTERY_TOPIC_ID,
+                                BATTERY_RESOURCE_ID,
+                                "fleet/vehicle/{{device_id}}/telemetry/{{resource_id}}",
+                                MqttTopicDescriptor.MQTT_TOPIC_TYPE_DEVICE_OUTGOING),
+                        new MqttTopicDescriptor(COMMAND_TOPIC_ID,
+                                COMMAND_RESOURCE_ID,
+                                "fleet/vehicle/{{device_id}}/command",
+                                MqttTopicDescriptor.MQTT_TOPIC_TYPE_DEVICE_INCOMING)
+                )
+        );
 
         return mqtt2MqttConfiguration;
     }

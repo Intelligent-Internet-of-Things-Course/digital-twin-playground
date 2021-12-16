@@ -3,7 +3,6 @@ package it.unimore.dipi.iot.digitaltwin.coap;
 import it.unimore.dipi.iot.wldt.engine.WldtConfiguration;
 import it.unimore.dipi.iot.wldt.engine.WldtEngine;
 import it.unimore.dipi.iot.wldt.exception.WldtConfigurationException;
-import it.unimore.dipi.iot.wldt.process.WldtCoapProcess;
 import it.unimore.dipi.iot.wldt.worker.coap.Coap2CoapConfiguration;
 import it.unimore.dipi.iot.wldt.worker.coap.Coap2CoapWorker;
 import org.slf4j.Logger;
@@ -18,7 +17,7 @@ public class CoapDtExampleProcess {
 
     private static final String TAG = "[WLDT-Process]";
 
-    private static final Logger logger = LoggerFactory.getLogger(WldtCoapProcess.class);
+    private static final Logger logger = LoggerFactory.getLogger(CoapDtExampleProcess.class);
 
     public static void main(String[] args)  {
 
@@ -37,7 +36,7 @@ public class CoapDtExampleProcess {
             wldtEngine.addNewWorker(new Coap2CoapWorker(getCoapProtocolConfiguration()));
             wldtEngine.startWorkers();
 
-        }catch (Exception | WldtConfigurationException e){
+        }catch (Exception e){
             e.printStackTrace();
         }
     }
