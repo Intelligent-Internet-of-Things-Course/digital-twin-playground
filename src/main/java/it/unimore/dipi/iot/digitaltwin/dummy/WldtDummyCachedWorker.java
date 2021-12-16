@@ -64,7 +64,9 @@ public class WldtDummyCachedWorker extends WldtWorker<DummyWorkerConfiguration, 
 
     private void emulateExternalGetRequest(int roundIndex) {
 
-        Timer.Context metricsContext = WldtMetricsManager.getInstance().getTimer(String.format("%s.%s", METRIC_BASE_IDENTIFIER, this.wldtId), WORKER_EXECUTION_TIME_METRICS_FIELD);
+        Timer.Context metricsContext = WldtMetricsManager
+                .getInstance()
+                .getTimer(String.format("%s.%s", METRIC_BASE_IDENTIFIER, this.wldtId), WORKER_EXECUTION_TIME_METRICS_FIELD);
 
         try{
 

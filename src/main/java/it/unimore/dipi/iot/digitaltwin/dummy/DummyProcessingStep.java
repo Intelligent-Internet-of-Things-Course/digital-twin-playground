@@ -31,6 +31,7 @@ public class DummyProcessingStep implements ProcessingStep {
             //Updating pipeline data
             pipelineData.setValue(pipelineData.getValue()*2);
 
+            //Notify ProcessingStep Listener
             listener.onStepDone(this, Optional.of(pipelineData));
         }
         else {

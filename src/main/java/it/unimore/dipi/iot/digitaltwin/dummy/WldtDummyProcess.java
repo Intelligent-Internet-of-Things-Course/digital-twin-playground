@@ -44,19 +44,21 @@ public class WldtDummyProcess {
             WldtEngine wldtEngine = new WldtEngine(wldtConfiguration);
 
             //Init Dummy Worker without Cache
-            WldtDummyWorker wldtDummyWorker = new WldtDummyWorker(
-                    wldtEngine.getWldtId(),
-                    new DummyWorkerConfiguration());
+            //WldtDummyWorker wldtDummyWorker = new WldtDummyWorker(
+            //        wldtEngine.getWldtId(),
+            //        new DummyWorkerConfiguration());
 
             //Init Dummy Worker with Cache
-            //WldtDummyCachedWorker wldtDummyWorker = new WldtDummyCachedWorker(
-            //        wldtEngine.getWldtId(),
-            //        new DummyWorkerConfiguration(),
-            //        new WldtCache<>(5, TimeUnit.SECONDS));
+            WldtDummyCachedWorker wldtDummyWorker = new WldtDummyCachedWorker(
+                    wldtEngine.getWldtId(),
+                    new DummyWorkerConfiguration(),
+                    new WldtCache<>(5, TimeUnit.SECONDS));
 
             //Set a Processing Pipeline
-            wldtDummyWorker.addProcessingPipeline(WldtDummyWorker.DEFAULT_PROCESSING_PIPELINE,
-                    new ProcessingPipeline(new DummyProcessingStep()));
+            wldtDummyWorker.addProcessingPipeline(
+                    WldtDummyWorker.DEFAULT_PROCESSING_PIPELINE,
+                    new ProcessingPipeline(new DummyProcessingStep())
+            );
 
             //Init WLDT Engine with Worker Cache
             wldtEngine.addNewWorker(wldtDummyWorker);

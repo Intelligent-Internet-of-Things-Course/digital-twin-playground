@@ -60,8 +60,10 @@ public class MqttDigitalTwinProcess {
 
             WldtEngine wldtEngine = new WldtEngine(wldtConfiguration);
 
-            Mqtt2MqttWorker mqtt2MqttWorker = new Mqtt2MqttWorker(wldtEngine.getWldtId(),
-                    getMqttProtocolConfiguration());
+            Mqtt2MqttWorker mqtt2MqttWorker = new Mqtt2MqttWorker(
+                    wldtEngine.getWldtId(),
+                    getMqttProtocolConfiguration()
+            );
 
             //Add Processing Pipeline for target topics
             mqtt2MqttWorker.addTopicProcessingPipeline(GPS_TOPIC_ID,
@@ -91,7 +93,6 @@ public class MqttDigitalTwinProcess {
 
         Mqtt2MqttConfiguration mqtt2MqttConfiguration = new Mqtt2MqttConfiguration();
 
-        mqtt2MqttConfiguration.setDtPublishingQoS(0);
         mqtt2MqttConfiguration.setBrokerAddress(SOURCE_BROKER_ADDRESS);
         mqtt2MqttConfiguration.setBrokerPort(SOURCE_BROKER_PORT);
         mqtt2MqttConfiguration.setDestinationBrokerAddress(DESTINATION_BROKER_ADDRESS);

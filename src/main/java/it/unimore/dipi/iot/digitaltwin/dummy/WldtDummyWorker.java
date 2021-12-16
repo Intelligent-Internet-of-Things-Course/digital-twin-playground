@@ -57,20 +57,22 @@ public class WldtDummyWorker extends WldtWorker<DummyWorkerConfiguration, String
 
             //Check Processing Pipeline
             if(this.hasProcessingPipeline(WldtDummyWorker.DEFAULT_PROCESSING_PIPELINE)) {
-                this.executeProcessingPipeline(DEFAULT_PROCESSING_PIPELINE, new DummyPipelineData(physicalObjectValue), new ProcessingPipelineListener() {
-                   @Override
-                   public void onPipelineDone(Optional<PipelineData> result) {
-                       if(result != null && result.isPresent())
-                           logger.info("Processing Pipeline Executed ! Result: {}", ((DummyPipelineData)result.get()).getValue());
-                       else
-                           logger.error("Processing pipeline result = null !");
-                   }
+                this.executeProcessingPipeline(DEFAULT_PROCESSING_PIPELINE,
+                        new DummyPipelineData(physicalObjectValue),
+                        new ProcessingPipelineListener() {
+                               @Override
+                               public void onPipelineDone(Optional<PipelineData> result) {
+                                   if(result != null && result.isPresent())
+                                       logger.info("Processing Pipeline Executed ! Result: {}", ((DummyPipelineData)result.get()).getValue());
+                                   else
+                                       logger.error("Processing pipeline result = null !");
+                               }
 
-                   @Override
-                   public void onPipelineError() {
-                       logger.error("Processing pipeline Error !");
-                   }
-               });
+                               @Override
+                               public void onPipelineError() {
+                                   logger.error("Processing pipeline Error !");
+                               }
+                         });
             }
 
             Thread.sleep(random.nextInt(3000) + 1000);
