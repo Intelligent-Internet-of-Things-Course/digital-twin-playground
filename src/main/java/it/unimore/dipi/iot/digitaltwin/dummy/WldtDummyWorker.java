@@ -57,6 +57,7 @@ public class WldtDummyWorker extends WldtWorker<DummyWorkerConfiguration, String
 
             //Check Processing Pipeline
             if(this.hasProcessingPipeline(WldtDummyWorker.DEFAULT_PROCESSING_PIPELINE)) {
+
                 this.executeProcessingPipeline(DEFAULT_PROCESSING_PIPELINE,
                         new DummyPipelineData(physicalObjectValue),
                         new ProcessingPipelineListener() {

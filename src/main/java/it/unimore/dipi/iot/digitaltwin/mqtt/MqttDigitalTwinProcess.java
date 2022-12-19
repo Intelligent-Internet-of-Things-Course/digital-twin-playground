@@ -9,6 +9,8 @@ import it.unimore.dipi.iot.wldt.worker.mqtt.Mqtt2MqttWorker;
 import it.unimore.dipi.iot.wldt.worker.mqtt.MqttTopicDescriptor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 
